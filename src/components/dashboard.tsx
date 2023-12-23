@@ -21,29 +21,24 @@ const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
 
 
-  useEffect(() =>{
+  useEffect(() => {
     const fetchData = async () => {
-      console.log(emailAddress);
       try {
         const response = await authService.getUserList();
-        if(emailAddress != null && response.data.data.length > 0) {
-          console.log(response.data);
-          response.data?.data!.map((datas)=>{
-            if(datas.email == emailAddress) {
-              setUserDetails(datas);
-              dispatch(profile({profilePicture: datas.avatar}));
-            }
-          });
-
+        if (emailAddress != null && response.data.data.length > 0) {
+          const userDetails = response.data.data.find((data) => data.email === emailAddress);
+          if (userDetails) {
+            setUserDetails(userDetails);
+            dispatch(profile({ profilePicture: userDetails.avatar }));
+          }
         }
-        console.log(response.data); // This will log the list of UserDto objects
       } catch (error) {
         console.error('Error fetching user list:', error);
       }
     };
-
+  
     fetchData();
-  }, []);
+  }, [emailAddress, dispatch]);
   return (
     <div>
       <h1> {userDetails?.first_name} Welcome to the Dashboard!</h1>
